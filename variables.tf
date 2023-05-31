@@ -9,7 +9,7 @@ variable "resource_group_name" {
 }
 
 variable "storage_account_name" {
-  default     = "stgstaticwebsite22"
+  default     = "stgstaticwebsite21"
   description = "Name of the storage account where website will be deployed"
 }
   
