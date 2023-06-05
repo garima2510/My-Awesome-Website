@@ -42,3 +42,54 @@ resource "azurerm_key_vault" "akv" {
   sku_name = "standard"
   soft_delete_retention_days = 7
 }
+
+#Create Virtual network
+resource "azurerm_virtual_network" "az_vnet" {
+  name = "vnet-1"
+  address_space = ["10.0.0.0/16"]
+  location = var.resource_group_location
+  resource_group_name = var.resource_group_name
+}
+
+#Create Subnet
+resource "azurerm_subnet" "az_subnet" {
+  name                 = "internal"
+  resource_group_name  = var.resource_group_location
+  virtual_network_name = var.resource_group_name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+#Create Network Interface 
+resource "azurerm_network_interface" "az_nic" {
+  name = "nic-1"
+  location = var.resource_group_location
+  resource_group_name = var.resource_group_name
+  
+  ip_configuration {
+    name = "internal"
+    subnet_id = azurerm_subnet.az_subnet.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+#Create VM
+resource "azurerm_windows_virtual_machine" "az_vm" {
+  name = "vm-1"
+  resource_group_name = var.resource_group_name
+  location = var.resource_group_location
+  size = "Standard_B1s"
+  admin_username = "iamazureadmin"
+  admin_password = "MostSecurePwd@3593"
+  network_interface_ids = [azurerm_network_interface.az_nic.id]
+  os_disk {
+    name = "osdisk-1"
+    caching = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer = "WindowsServer"
+    sku = "2019-Datacenter"
+    version = "latest"
+  }
+}
