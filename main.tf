@@ -33,3 +33,12 @@ resource "azurerm_storage_blob" "web_files" {
   source                 = "index.html"
 }
 
+#Create Key Vault
+resource "azurerm_key_vault" "akv" {
+  name = var.kv_name
+  location = var.resource_group_location
+  resource_group_name = var.resource_group_name
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  sku_name = "standard"
+  soft_delete_retention_days = 7
+}

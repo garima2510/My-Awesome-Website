@@ -12,4 +12,8 @@ variable "storage_account_name" {
   default     = "stgstaticwebsite21"
   description = "Name of the storage account where website will be deployed"
 }
-  
+
+variable "kv_name" {
+  default     = "kvtest356"
+  description = "Name of the key vault in case required"
+}
