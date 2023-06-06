@@ -12,11 +12,11 @@ resource "azurerm_storage_account" "stg_acc" {
   name                = var.storage_account_name
   location            = var.resource_group_location
 
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  account_kind             = "StorageV2"
-  min_tls_version          = "TLS1_0"
-  enable_https_traffic_only = false
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  account_kind                    = "StorageV2"
+  min_tls_version                 = "TLS1_0"
+  enable_https_traffic_only       = false
   allow_nested_items_to_be_public = true
 
   static_website {
@@ -37,19 +37,19 @@ resource "azurerm_storage_blob" "web_files" {
 
 #Create Key Vault
 resource "azurerm_key_vault" "akv" {
-  name = var.kv_name
-  location = var.resource_group_location
-  resource_group_name = var.resource_group_name
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  sku_name = "standard"
+  name                       = var.kv_name
+  location                   = var.resource_group_location
+  resource_group_name        = var.resource_group_name
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  sku_name                   = "standard"
   soft_delete_retention_days = 7
 }
 
 #Create Virtual network
 resource "azurerm_virtual_network" "az_vnet" {
-  name = "vnet-1"
-  address_space = ["10.0.0.0/16"]
-  location = var.resource_group_location
+  name                = "vnet-1"
+  address_space       = ["10.0.0.0/16"]
+  location            = var.resource_group_location
   resource_group_name = var.resource_group_name
 }
 
@@ -63,35 +63,59 @@ resource "azurerm_subnet" "az_subnet" {
 
 #Create Network Interface 
 resource "azurerm_network_interface" "az_nic" {
-  name = "nic-1"
-  location = var.resource_group_location
+  name                = "nic-1"
+  location            = var.resource_group_location
   resource_group_name = var.resource_group_name
-  
+
   ip_configuration {
-    name = "internal"
-    subnet_id = azurerm_subnet.az_subnet.id
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.az_subnet.id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 #Create VM
 resource "azurerm_windows_virtual_machine" "az_vm" {
-  name = "vm-1"
-  resource_group_name = var.resource_group_name
-  location = var.resource_group_location
-  size = "Standard_B1s"
-  admin_username = "iamazureadmin"
-  admin_password = "MostSecurePwd@3593"
+  name                  = "vm-1"
+  resource_group_name   = var.resource_group_name
+  location              = var.resource_group_location
+  size                  = "Standard_B1s"
+  admin_username        = "iamazureadmin"
+  admin_password        = "MostSecurePwd@3593"
   network_interface_ids = [azurerm_network_interface.az_nic.id]
   os_disk {
-    name = "osdisk-1"
-    caching = "ReadWrite"
+    name                 = "osdisk-1"
+    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
-    offer = "WindowsServer"
-    sku = "2019-Datacenter"
-    version = "latest"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter"
+    version   = "latest"
+  }
+}
+
+#Create Azure App Service Plan
+resource "azurerm_service_plan" "az_asp" {
+  name                = "asp-1"
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+  os_type             = "Windows"
+  sku_name            = "Y1"
+}
+
+#Create Function App
+resource "azurerm_windows_function_app" "az_afa" {
+  name                = "az-afa-1"
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+
+  storage_account_name       = var.storage_account_name
+  storage_account_access_key = "zUGzjIZRwSYU03IgPLphNBH/LBEa12EtFaxQeZasP2P36FlmqWrF+YeZXaI322XjlRMFEgGbezmkH56zg2T99Q=="
+  service_plan_id            = azurerm_service_plan.az_asp.id
+
+  site_config {
+
   }
 }
