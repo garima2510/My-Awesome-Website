@@ -16,7 +16,7 @@ resource "azurerm_storage_account" "stg_acc" {
   account_replication_type = "LRS"
   account_kind             = "StorageV2"
   min_tls_version          = "TLS1_0"
-  enable_https_traffic_only = true
+  enable_https_traffic_only = false
   allow_nested_items_to_be_public = true
 
   static_website {
