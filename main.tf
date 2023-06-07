@@ -39,7 +39,7 @@ resource "azurerm_storage_blob" "web_files" {
 resource "azurerm_key_vault" "akv" {
   name                       = var.kv_name
   location                   = var.resource_group_location
-  resource_group_name        = var.resource_group_name
+  resource_group_name        = azurerm_resource_group.rg.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
   soft_delete_retention_days = 7
@@ -50,14 +50,14 @@ resource "azurerm_virtual_network" "az_vnet" {
   name                = "vnet-1"
   address_space       = ["10.0.0.0/16"]
   location            = var.resource_group_location
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
 #Create Subnet
 resource "azurerm_subnet" "az_subnet" {
   name                 = "internal"
-  resource_group_name  = var.resource_group_location
-  virtual_network_name = var.resource_group_name
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.az_vnet.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
@@ -65,7 +65,7 @@ resource "azurerm_subnet" "az_subnet" {
 resource "azurerm_network_interface" "az_nic" {
   name                = "nic-1"
   location            = var.resource_group_location
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
     name                          = "internal"
@@ -77,7 +77,7 @@ resource "azurerm_network_interface" "az_nic" {
 #Create VM
 resource "azurerm_windows_virtual_machine" "az_vm" {
   name                  = "vm-1"
-  resource_group_name   = var.resource_group_name
+  resource_group_name   = azurerm_resource_group.rg.name
   location              = var.resource_group_location
   size                  = "Standard_B1s"
   admin_username        = "iamazureadmin"
@@ -99,7 +99,7 @@ resource "azurerm_windows_virtual_machine" "az_vm" {
 #Create Azure App Service Plan
 resource "azurerm_service_plan" "az_asp" {
   name                = "asp-1"
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
   location            = var.resource_group_location
   os_type             = "Windows"
   sku_name            = "Y1"
@@ -108,11 +108,11 @@ resource "azurerm_service_plan" "az_asp" {
 #Create Function App
 resource "azurerm_windows_function_app" "az_afa" {
   name                = "az-afa-1"
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
   location            = var.resource_group_location
 
   storage_account_name       = var.storage_account_name
-  storage_account_access_key = "zUGzjIZRwSYU03IgPLphNBH/LBEa12EtFaxQeZasP2P36FlmqWrF+YeZXaI322XjlRMFEgGbezmkH56zg2T99Q=="
+  storage_account_access_key = "5+glBvOqnN0y14ID5UvBcNpqXXQ1qzTCHVfctoYr6CjdXGEkSoAsMML1Ft/zIlSoGYtW0yoCTV0x+ASti5wXGA=="
   service_plan_id            = azurerm_service_plan.az_asp.id
 
   site_config {

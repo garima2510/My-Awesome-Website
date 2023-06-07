@@ -4,7 +4,7 @@ variable "resource_group_location" {
 }
 
 variable "resource_group_name" {
-  default     = "rg-al-website"
+  default     = "rg-tf-misc"
   description = "Name of the resource group where website will be deployed"
 }
 
@@ -14,6 +14,6 @@ variable "storage_account_name" {
 }
 
 variable "kv_name" {
-  default     = "kvtest356"
+  default     = "kvaltf567"
   description = "Name of the key vault in case required"
 }
