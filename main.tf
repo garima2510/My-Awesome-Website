@@ -112,7 +112,7 @@ resource "azurerm_windows_function_app" "az_afa" {
   location            = var.resource_group_location
 
   storage_account_name       = var.storage_account_name
-  storage_account_access_key = "5+glBvOqnN0y14ID5UvBcNpqXXQ1qzTCHVfctoYr6CjdXGEkSoAsMML1Ft/zIlSoGYtW0yoCTV0x+ASti5wXGA=="
+  storage_account_access_key = "5+glBvOqnN0y14ID5UvBcNpqXXQ1qzTCHVfctoYr6CjdXGEkSoAsMML1Ft/zIlSoGYtW0yoCTV0x+ASti5wXGA==" #never do this
   service_plan_id            = azurerm_service_plan.az_asp.id
 
   site_config {
